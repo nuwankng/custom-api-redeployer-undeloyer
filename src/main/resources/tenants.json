@@ -1,0 +1,14 @@
+{
+  "wso2.com": {
+    "consumerKey": "64aYA2jy7VhNuZeCu0INJq87kCUa",
+    "consumerSecret": "ObJZtL6f3G4kmM3GywEQdc8Vcm8a"
+  },
+  "abc.com": {
+    "consumerKey": "cAlWduHc0qUhDSNdJsh3dBPAfhIa",
+    "consumerSecret": "EdBtCj62JHalxd9id_02xavqroAa"
+  },
+  "carbon.super": {
+    "consumerKey": "A_9K4FM4XWlxfF9v_2VsnAQy9Wka",
+    "consumerSecret": "M5jwZ4zT7HlI7bJGVP6bs6r9Mc8a"
+  }
+}
