@@ -6,7 +6,7 @@ The API Redeployment Client is a Java-based project designed to facilitate the r
 ## Requirements
 - Java 11 or higher
 - Maven
-- Consumer key/secret pair from an tenant specific Oauth Application created for API management.
+- Consumer key/secret pair from a tenant specific Oauth Application created for API management.
 
 ## Setup and Installation
 
