@@ -1,11 +1,12 @@
 # API Redeployment Client
 
 ## Overview
-The API Redeployment Client is a Java-based project designed to facilitate the redeployment of APIs. The project includes a set of utilities and a main service class to handle configurations and HTTP requests necessary for the redeployment process.
+The API Redeployment Client is a Java-based project designed to facilitate the redeployment of APIs in `APIM-4.2.0`. The project includes a set of utilities and a main service class to handle configurations and HTTP requests necessary for the redeployment process.
 
 ## Requirements
 - Java 11 or higher
 - Maven
+- Consumer key/secret pair from an tenant specific Oauth Application created for API management.
 
 ## Setup and Installation
 
