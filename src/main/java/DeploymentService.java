@@ -64,11 +64,11 @@ public class DeploymentService {
                             apiListLimit, apiListOffset, apiListSortBy, apiListOrderBy);
 
                     if (apiDetailsArray == null || apiDetailsArray.isEmpty()) {
-                        logger.error("No APIs found for consumerKey: {}", consumerKey);
+                        logger.error("No APIs found for the tenant {} with consumerKey: {}", tenant, consumerKey);
                         continue;
                     }
 
-                    logger.info("Updating and creating new revisions for {} APIs", apiDetailsArray.size());
+                    logger.info("Updating and creating new revisions for {} APIs in the tenant: {}", apiDetailsArray.size(), tenant);
                     for (JSONObject apiDetails : apiDetailsArray) {
                         String apiId = (String) apiDetails.get("id");
                         String apiName = (String) apiDetails.get("name");
