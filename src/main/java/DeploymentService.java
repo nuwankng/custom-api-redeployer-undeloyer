@@ -1,3 +1,6 @@
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -17,6 +20,7 @@ public class DeploymentService {
     static String residentTokenUrl;
     static String publisherRestUrl;
     static String jsonFilePath;
+    static String revisonList;
     static String revisionDescription;
     static String apiListLimit;
     static String apiListOffset;
@@ -80,16 +84,7 @@ public class DeploymentService {
                             continue;
                         }
 
-                        logger.info("Updating API: {} with ID: {}", apiName, apiId);
-                        Boolean updateStatus = RestRequests.updateApi(publisherRestUrl, accessToken, apiId, apiData.toJSONString());
-
-                        if (!updateStatus) {
-                            logger.error("Failed to update API: {} with ID: {}", apiName, apiId);
-                            continue;
-                        }
-
-                        logger.info("Finished updating API: {} with ID: {}", apiName, apiId);
-                        logger.info("Creating and deploying new revision for API: {} with ID: {}", apiName, apiId);
+                        logger.info("Updating API: {} with ID: {}", apiName, apiId, apiData.toJSONString());
 
                         ArrayList<JSONObject> deployedRevisionDetails = RestRequests.getRevisionDetails(publisherRestUrl, accessToken, apiId);
                         if (deployedRevisionDetails == null || deployedRevisionDetails.isEmpty()) {
@@ -100,6 +95,27 @@ public class DeploymentService {
                         Map<String, List<Map<String, String>>> revisionMap = extractDeploymentInfo(deployedRevisionDetails);
 
                         logger.info("Creating new revision for API: {} with ID: {}", apiName, apiId);
+
+                        //Used to iterate through the revisions and then undeploy the revisions mentioned on the revision.json file
+                        for (Map.Entry<String, List<Map<String, String>>> entry : revisionMap.entrySet()) {
+                            String revisionID = entry.getKey();
+
+                            if (revisonList != null && !revisonList.trim().isEmpty()) {
+                                JSONParser revisionParser = new JSONParser();
+                                try (FileReader revisionReader = new FileReader(revisonList)) {
+                                    JSONArray jsonArray = (JSONArray) revisionParser.parse(revisionReader);
+
+                                    JSONArray undeployRevision = RestRequests.undeployRevisions(publisherRestUrl, jsonArray, accessToken, apiId, revisionID);
+
+                                }
+
+                            }
+
+                        }
+                        ArrayList<JSONObject> updateDeployedRevisionDetails = RestRequests.getRevisionDetails(publisherRestUrl, accessToken, apiId);
+
+                        Map<String, List<Map<String, String>>> updatedRevisionMap = extractDeploymentInfo(updateDeployedRevisionDetails);
+
                         JSONObject createNewRevisionResponse = RestRequests.createRevision(publisherRestUrl, accessToken, apiId, revisionDescription);
                         if (createNewRevisionResponse == null || createNewRevisionResponse.isEmpty()) {
                             logger.error("Failed to create new revision for API: {} with ID: {}", apiName, apiId);
@@ -108,7 +124,9 @@ public class DeploymentService {
                         String newRevisionId = (String) createNewRevisionResponse.get("id");
                         logger.info("Created new revision with ID: {}", newRevisionId);
 
-                        deployNewRevision(publisherRestUrl, accessToken, apiId, revisionMap, newRevisionId);
+                        deployNewRevision(publisherRestUrl, accessToken, apiId, updatedRevisionMap, newRevisionId);
+
+
                     }
                     logger.info("API redeployment process for the tenant: {} with consumer key: {} has been completed", tenant, consumerKey);
                 }
@@ -136,10 +154,12 @@ public class DeploymentService {
         publisherRestUrl = loadAndValidateProperty(configs, "PUBLISHER.REST.URL");
         revisionDescription = loadAndValidateProperty(configs, "REVISION.DESCRIPTION");
         jsonFilePath = loadAndValidateProperty(configs, "JSON.FILE.PATH");
+        revisonList = loadAndValidateProperty(configs, "REVISIONLIST.FILE.PATH");
         apiListLimit = loadAndValidateProperty(configs, "API.LIST.LIMIT");
         apiListOffset = loadAndValidateProperty(configs, "API.LIST.OFFSET");
         apiListSortBy = loadAndValidateProperty(configs, "API.LIST.SORTBY");
         apiListOrderBy = loadAndValidateProperty(configs, "API.LIST.ORDERBY");
+
     }
 
     private static String loadAndValidateProperty(ReadConfigFile configs, String propertyName) {

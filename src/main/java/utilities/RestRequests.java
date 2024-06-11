@@ -15,6 +15,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -255,4 +256,43 @@ public class RestRequests {
         }
         return deployRevisionResponse;
     }
+
+    public static JSONArray undeployRevisions(String url, JSONArray jsonArray, String accessToken, String apiId,
+                                              String revisionId) throws IOException, ParseException {
+
+        JSONArray undeploy = null;
+        CloseableHttpClient httpClient = HttpClientManager.getInstance();
+
+        HttpPost httpPost = new HttpPost(url+"/"+apiId+"/undeploy-revision?revisionId="+revisionId);
+        httpPost.addHeader(HttpHeaders.AUTHORIZATION, AUTH_BEARER + accessToken);
+        HttpEntity stringEntity = new StringEntity(jsonArray.toString(), ContentType.APPLICATION_JSON);
+        httpPost.setEntity(stringEntity);
+
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        HttpEntity entity = response.getEntity();
+
+        String responseString = EntityUtils.toString(entity);
+        if (entity != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+            JSONParser parser = new JSONParser();
+            undeploy = (JSONArray) parser.parse(responseString);
+        } else {
+            logger.error("Error in deployRevision REST request: {} | Response: {}", url, responseString);
+        }
+        return undeploy;
+
+//        CloseableHttpResponse response = httpClient.execute(request);
+//
+//        HttpEntity entity = response.getEntity();
+//        String responseString = EntityUtils.toString(entity);
+//        if (entity != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+//            JSONParser parser = new JSONParser();
+//            undeploy = (JSONArray) parser.parse(responseString);
+//        } else {
+//            logger.error("Error in deployRevision REST request: {} | Response: {}", url, responseString);
+//        }
+//        return undeploy;
+
+    }
+
+
 }
