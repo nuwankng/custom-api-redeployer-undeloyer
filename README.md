@@ -27,6 +27,8 @@ The API Redeployment Client is a Java-based project designed to facilitate the r
     ├── config.properties
     ├── logback.xml
     └── tenants.json
+    └── revisions.json
+    
     ```
 
 ## Usage
@@ -39,6 +41,7 @@ The API Redeployment Client is a Java-based project designed to facilitate the r
 2. **Configuration:**
     - The `config.properties` file should include necessary configuration details like API endpoints, credentials, etc.
     - The `tenants.json` file should include information about the tenants to be redeployed.
+    - The `revisions.json` file should include information about the revisions to be undeployed.
 
 3. **Logging:**
     - A `logs` directory will be created in the project's root directory.
@@ -65,6 +68,15 @@ The `tenants.json` file should contain the following schema structure:
 }
 ```
 
+## `revisions.json` File Schema
+The `revisions.json` file should contain the following schema structure:
+```json
+[
+{"name": "External", "displayOnDevportal": false},
+{"name": "Internal", "displayOnDevportal": false}
+]
+```
+
 ## Project Files
   - `DeploymentService.java`: The main service class responsible for initiating the redeployment process.
   - utilities/`ReadConfigFile.java`: Utility class for reading configuration files.
@@ -72,4 +84,5 @@ The `tenants.json` file should contain the following schema structure:
   - utilities/`RestRequests.java`: Utility class for making REST requests.
   - `logback.xml`: Configuration file for logging.
   - `tenants.json`: JSON file containing tenant information.
+  - `revisions.json`: JSON file containing to be undeployed revision information.
   - `config.properties`: Properties file for application configuration.
